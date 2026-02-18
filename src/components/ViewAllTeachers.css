@@ -1,0 +1,381 @@
+.teachers-page {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* --- Header Section --- */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1e293b;
+    padding: 20px 25px;
+    border-radius: 12px;
+    border: 1px solid #334155;
+    margin-bottom: 25px;
+}
+
+.header-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.icon-badge {
+    width: 45px;
+    height: 45px;
+    background: rgba(139, 92, 246, 0.15);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-info h1 {
+    font-size: 1.4rem;
+    color: #f8fafc;
+    margin: 0;
+}
+
+.header-info p {
+    color: #94a3b8;
+    margin: 4px 0 0 0;
+    font-size: 0.85rem;
+}
+
+.search-box {
+    position: relative;
+    width: 320px;
+}
+
+.s-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #64748b;
+}
+
+.search-box input {
+    width: 100%;
+    background: #0f172a;
+    border: 1px solid #334155;
+    padding: 10px 15px 10px 40px;
+    border-radius: 8px;
+    color: #f1f5f9;
+    outline: none;
+    transition: 0.3s;
+}
+
+.search-box input:focus {
+    border-color: #8b5cf6;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+}
+
+/* --- Table Styles --- */
+.table-card {
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid #334155;
+    border-radius: 12px;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+.faculty-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.faculty-table th {
+    background: #1e293b;
+    padding: 15px 20px;
+    color: #94a3b8;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.faculty-table td {
+    padding: 15px 20px;
+    border-bottom: 1px solid #334155;
+    color: #e2e8f0;
+}
+
+.faculty-table tr:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+/* Teacher Info */
+.teacher-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.t-avatar {
+    width: 38px;
+    height: 38px;
+    background: linear-gradient(135deg, #8b5cf6, #d946ef);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+}
+
+.t-name {
+    display: block;
+    font-weight: 600;
+}
+
+.t-email {
+    font-size: 0.8rem;
+    color: #94a3b8;
+}
+
+/* Status Tags */
+.status-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.status-tag.approved {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.status-tag.pending {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+/* Assigned Students Column */
+.student-count {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #cbd5e1;
+    font-size: 0.85rem;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 5px 12px;
+    border-radius: 6px;
+    width: fit-content;
+}
+
+/* Location Button */
+.loc-btn {
+    background: rgba(99, 102, 241, 0.1);
+    color: #818cf8;
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: 0.3s;
+}
+
+.loc-btn:hover {
+    background: #6366f1;
+    color: white;
+}
+
+.no-loc {
+    color: #475569;
+    font-size: 0.8rem;
+    font-style: italic;
+}
+
+/* --- Modal Styles --- */
+.map-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.map-modal {
+    background: #1e293b;
+    width: 90%;
+    max-width: 800px;
+    border-radius: 16px;
+    border: 1px solid #334155;
+    overflow: hidden;
+    animation: modalIn 0.3s ease-out;
+}
+
+.modal-header {
+    padding: 15px 20px;
+    background: #0f172a;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+}
+
+.modal-header h3 { font-size: 1rem; margin: 0; }
+
+.close-modal {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+}
+
+.modal-body {
+    height: 400px;
+    width: 100%;
+}
+
+.leaflet-map {
+    height: 100%;
+    width: 100%;
+}
+
+/* Animations */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes modalIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* --- Clickable Student Badge --- */
+.student-count-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #cbd5e1;
+    font-size: 0.85rem;
+    background: rgba(139, 92, 246, 0.1);
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.student-count-badge:hover {
+    background: rgba(139, 92, 246, 0.25);
+    border-color: #8b5cf6;
+    transform: translateY(-2px);
+}
+
+/* --- Student Modal Specifics --- */
+.student-modal {
+    max-width: 700px !important;
+    background: #1e293b;
+}
+
+.modal-title-combined {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.scrollable-body {
+    max-height: 500px;
+    overflow-y: auto;
+    padding: 0 !important;
+}
+
+.inner-student-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.inner-student-table th {
+    background: #0f172a;
+    color: #64748b;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    padding: 12px 20px;
+    text-align: left;
+    position: sticky;
+    top: 0;
+}
+
+.inner-student-table td {
+    padding: 12px 20px;
+    border-bottom: 1px solid #334155;
+    font-size: 0.9rem;
+    color: #e2e8f0;
+}
+
+.student-info-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.s-mini-avatar {
+    width: 28px;
+    height: 28px;
+    background: #334155;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.email-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #94a3b8;
+}
+
+.mini-status {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    text-transform: capitalize;
+}
+
+.mini-status.present { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+.mini-status.absent { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+
+.empty-students {
+    padding: 50px;
+    text-align: center;
+    color: #475569;
+}
+
+/* Existing Modal base styles */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 2000;
+}
+
+.modal-card {
+    width: 90%;
+    border-radius: 16px;
+    border: 1px solid #334155;
+    overflow: hidden;
+    animation: modalIn 0.3s ease-out;
+}
+
+.modal-header {
+    padding: 15px 20px;
+    background: #0f172a;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+}
