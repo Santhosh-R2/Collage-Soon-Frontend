@@ -36,7 +36,7 @@ function AdminBroadcast() {
     };
 
     try {
-      const response = await axios.post('https://collage-soon-backend.vercel.app/api/admin/broadcast', payload);
+      const response = await axios.post('https://collage-backend-123.vercel.app/api/admin/broadcast', payload);
 
       setStatus({ 
         type: 'success', 
