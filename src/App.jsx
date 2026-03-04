@@ -7,6 +7,8 @@ import ViewAllTeachers from './components/ViewAllTeachers';
 import UsersRequest from './components/UsersRequest';
 import Drivers from './components/Drivers';
 import AdminBroadcast from './components/AdminBroadcast';
+import TrackLiveMap from './components/TrackLiveMap';
+import BroadcastArchive from './components/BroadcastArchive';
 
 function App() {
   return (
@@ -19,7 +21,10 @@ function App() {
         <Route path="teachers" element={<ViewAllTeachers />} />
         <Route path="requests" element={<UsersRequest />} />
         <Route path="drivers" element={<Drivers />} />
+        <Route path="map" element={<TrackLiveMap />} />
         <Route path="broadcast" element={<AdminBroadcast />} />
+        <Route path="broadcast-archive" element={<BroadcastArchive />} />
+
       </Route>
     </Routes>
   );

@@ -1,0 +1,133 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+.Broadcast-arch-viewport {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    animation: Broadcast-arch-fadeIn 0.5s ease-out;
+}
+
+/* --- Command Header --- */
+.Broadcast-arch-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1e293b;
+    padding: 22px 30px;
+    border-radius: 20px;
+    border: 1px solid #334155;
+    margin-bottom: 20px;
+}
+
+.Broadcast-arch-title-box { display: flex; align-items: center; gap: 15px; }
+.Broadcast-arch-icon-container {
+    width: 48px; height: 48px;
+    background: rgba(99, 102, 241, 0.1);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+}
+
+.Broadcast-arch-main-title { font-size: 1.4rem; color: #fff; margin: 0; font-weight: 800; letter-spacing: -0.5px; }
+.Broadcast-arch-sub-title { color: #94a3b8; font-size: 0.85rem; margin: 3px 0 0 0; }
+.Broadcast-arch-active-label { color: #6366f1; font-weight: 700; text-transform: uppercase; }
+
+.Broadcast-arch-search-wrapper { position: relative; width: 300px; }
+.Broadcast-arch-s-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #64748b; }
+.Broadcast-arch-search-input {
+    width: 100%; background: #0f172a; border: 1px solid #334155;
+    padding: 10px 15px 10px 45px; border-radius: 10px; color: #fff; outline: none; transition: 0.3s;
+}
+
+/* --- Filter Tabs --- */
+.Broadcast-arch-tabs-container {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.Broadcast-arch-tab-btn {
+    display: flex; align-items: center; gap: 8px;
+    background: #0f172a; border: 1px solid #334155;
+    padding: 10px 20px; border-radius: 12px;
+    color: #64748b; font-size: 0.85rem; font-weight: 600;
+    cursor: pointer; transition: 0.3s;
+}
+
+.Broadcast-arch-tab-btn:hover { border-color: #6366f1; color: #f1f5f9; }
+
+.Broadcast-arch-tab-active {
+    background: #6366f1;
+    color: #fff;
+    border-color: #6366f1;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+/* --- Archive List --- */
+.Broadcast-arch-list { display: flex; flex-direction: column; gap: 15px; }
+
+.Broadcast-arch-log-card {
+    background: rgba(30, 41, 59, 0.5);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 22px;
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.Broadcast-arch-log-card:hover { transform: translateX(8px); border-color: #475569; }
+
+/* Dynamic Borders per Sender Type */
+.Broadcast-arch-border-admin { border-left: 4px solid #6366f1; }
+.Broadcast-arch-border-teacher { border-left: 4px solid #8b5cf6; }
+.Broadcast-arch-border-driver { border-left: 4px solid #ef4444; }
+
+.Broadcast-arch-card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+.Broadcast-arch-meta-info { display: flex; align-items: center; gap: 15px; }
+
+.Broadcast-arch-audience-pill {
+    padding: 4px 12px; border-radius: 20px; font-size: 0.65rem; font-weight: 800;
+    text-transform: uppercase; display: flex; align-items: center; gap: 6px;
+}
+
+.Broadcast-arch-tag-admin { background: rgba(99, 102, 241, 0.1); color: #818cf8; }
+.Broadcast-arch-tag-teacher { background: rgba(139, 92, 246, 0.1); color: #a78bfa; }
+.Broadcast-arch-tag-driver { background: rgba(239, 68, 68, 0.1); color: #fca5a5; }
+
+.Broadcast-arch-timestamp, .Broadcast-arch-datestamp { 
+    color: #475569; font-size: 0.7rem; font-weight: 700; display: flex; align-items: center; gap: 5px; 
+}
+
+.Broadcast-arch-log-title { margin: 0 0 8px 0; color: #f1f5f9; font-size: 1.1rem; font-weight: 700; }
+.Broadcast-arch-log-message { color: #94a3b8; font-size: 0.9rem; line-height: 1.6; margin: 0; }
+
+.Broadcast-arch-card-footer {
+    margin-top: 20px; padding-top: 15px; border-top: 1px solid rgba(255, 255, 255, 0.03);
+    display: flex; justify-content: space-between; align-items: center;
+}
+
+.Broadcast-arch-sender-profile { display: flex; align-items: center; gap: 10px; }
+.Broadcast-arch-avatar-mini {
+    width: 28px; height: 28px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; font-weight: 800; color: #fff;
+}
+.Broadcast-arch-av-admin { background: #6366f1; }
+.Broadcast-arch-av-teacher { background: #8b5cf6; }
+.Broadcast-arch-av-driver { background: #ef4444; }
+
+.Broadcast-arch-sender-name { color: #64748b; font-size: 0.75rem; font-weight: 700; }
+
+.Broadcast-arch-status-text { color: #94a3b8; font-size: 0.75rem; font-weight: 600; margin-left: 6px; }
+
+/* States */
+.Broadcast-arch-loading-state, .Broadcast-arch-empty-state {
+    text-align: center; padding: 100px 0; color: #475569; display: flex; flex-direction: column; align-items: center; gap: 15px;
+}
+.Broadcast-arch-spinner { animation: Broadcast-arch-spin 1s linear infinite; color: #6366f1; }
+
+@keyframes Broadcast-arch-spin { to { transform: rotate(360deg); } }
+@keyframes Broadcast-arch-fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+@media (max-width: 800px) {
+    .Broadcast-arch-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+    .Broadcast-arch-tabs-container { overflow-x: auto; width: 100%; padding-bottom: 10px; }
+    .Broadcast-arch-tab-btn { flex-shrink: 0; }
+}

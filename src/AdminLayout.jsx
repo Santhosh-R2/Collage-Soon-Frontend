@@ -11,6 +11,7 @@ import {
   LogOut, 
   ShieldCheck, 
   AlertTriangle,
+  ListFilter
 } from 'lucide-react';
 import './AdminLayout.css';
 
@@ -59,6 +60,9 @@ const AdminLayout = () => {
       path: '/admin/broadcast', 
       icon: <Megaphone size={20} strokeWidth={2.2} /> 
     },
+     { name: 'Broadcast Logs', 
+      path: '/admin/broadcast-archive',
+       icon: <ListFilter size={20} /> },
   ];
 
   return (
