@@ -3,7 +3,7 @@ import axiosInstance from '../service';
 import { 
   Search, Clock, Calendar, Target, 
   User, ChevronRight, History, Megaphone, Loader2,
-  ShieldCheck, GraduationCap, BusFront, LayoutList
+  ShieldCheck, GraduationCap, BusFront, LayoutList, Trash2
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import './BroadcastArchive.css';
@@ -27,6 +27,19 @@ function BroadcastArchive() {
       console.error("Archive fetch error", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteLog = async (id, type) => {
+    if (!window.confirm("Are you sure you want to delete this log entry permanently?")) return;
+    
+    try {
+      await axiosInstance.delete(`/admin/broadcast/${id}/${type}`);
+      // Refresh list
+      fetchLogs();
+    } catch (err) {
+      console.error("Delete error", err);
+      alert("Failed to delete log entry");
     }
   };
 
@@ -116,7 +129,14 @@ function BroadcastArchive() {
                       <Calendar size={12} /> {new Date(log.createdAt).toLocaleDateString()}
                     </span>
                   </div>
-                  <ChevronRight size={16} className="Broadcast-arch-arrow" />
+                  
+                  <button 
+                    className="Broadcast-arch-delete-btn"
+                    onClick={() => handleDeleteLog(log._id, log.type)}
+                    title="Delete permanently"
+                  >
+                    <Trash2 size={16} />
+                  </button>
                 </div>
 
                 <div className="Broadcast-arch-card-body">

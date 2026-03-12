@@ -131,3 +131,23 @@
     .Broadcast-arch-tabs-container { overflow-x: auto; width: 100%; padding-bottom: 10px; }
     .Broadcast-arch-tab-btn { flex-shrink: 0; }
 }
+
+/* Delete Button Styles */
+.Broadcast-arch-delete-btn {
+    background: transparent;
+    border: none;
+    color: #475569;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.Broadcast-arch-delete-btn:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    transform: scale(1.1);
+}
