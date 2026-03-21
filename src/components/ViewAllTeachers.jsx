@@ -103,49 +103,64 @@ function ViewAllTeachers() {
               </tr>
             </thead>
             <tbody>
-              {filteredTeachers.map((teacher) => (
-                <tr key={teacher._id}>
-                  <td>
-                    <div className="teacher-profile">
-                      <div className="t-avatar">{teacher.name.charAt(0)}</div>
-                      <div className="t-info">
-                        <span className="t-name">{teacher.name}</span>
-                        <span className="t-email">{teacher.email}</span>
+              {filteredTeachers.length > 0 ? (
+                filteredTeachers.map((teacher) => (
+                  <tr key={teacher._id}>
+                    <td>
+                      <div className="teacher-profile">
+                        <div className="t-avatar">{teacher.name.charAt(0)}</div>
+                        <div className="t-info">
+                          <span className="t-name">{teacher.name}</span>
+                          <span className="t-email">{teacher.email}</span>
+                        </div>
                       </div>
+                    </td>
+
+                    <td>
+                      {teacher.isApproved ? (
+                        <span className="status-tag approved"><CheckCircle size={12} /> Approved</span>
+                      ) : (
+                        <span className="status-tag pending"><Clock size={12} /> Pending</span>
+                      )}
+                    </td>
+
+                    <td>
+                      <button 
+                          className="student-count-badge" 
+                          onClick={() => handleOpenStudents(teacher)}
+                          title="Click to view students"
+                      >
+                        <Users size={14} />
+                        <span>{teacher.assignedStudents?.length || 0} Students</span>
+                      </button>
+                    </td>
+
+                    <td>
+                      {teacher.homeLocation?.lat !== 0 ? (
+                        <button className="loc-btn" onClick={() => handleOpenMap(teacher)}>
+                          <MapPin size={14} /> View Map
+                        </button>
+                      ) : (
+                        <span className="no-loc">No GPS Data</span>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="4">
+                    <div className="faculty-premium-empty">
+                      <div className="faculty-empty-icon-capsule">
+                        <BookOpen size={60} color="#8b5cf6" className="faculty-empty-pulse-icon" />
+                        <div className="faculty-empty-ring"></div>
+                      </div>
+                      <h3>No Faculty Records Found</h3>
+                      <p>The central directory currently has no verified teaching staff matching your search parameters.</p>
+                      <div className="faculty-empty-hint">Try clearing your filters or refreshing the database.</div>
                     </div>
                   </td>
-
-                  <td>
-                    {teacher.isApproved ? (
-                      <span className="status-tag approved"><CheckCircle size={12} /> Approved</span>
-                    ) : (
-                      <span className="status-tag pending"><Clock size={12} /> Pending</span>
-                    )}
-                  </td>
-
-                  <td>
-                    {/* CLICKABLE STUDENT COUNT */}
-                    <button 
-                        className="student-count-badge" 
-                        onClick={() => handleOpenStudents(teacher)}
-                        title="Click to view students"
-                    >
-                      <Users size={14} />
-                      <span>{teacher.assignedStudents?.length || 0} Students</span>
-                    </button>
-                  </td>
-
-                  <td>
-                    {teacher.homeLocation?.lat !== 0 ? (
-                      <button className="loc-btn" onClick={() => handleOpenMap(teacher)}>
-                        <MapPin size={14} /> View Map
-                      </button>
-                    ) : (
-                      <span className="no-loc">No GPS Data</span>
-                    )}
-                  </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         )}

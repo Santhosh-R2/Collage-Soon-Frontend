@@ -17,10 +17,51 @@ const createBusIcon = (heading) => new L.DivIcon({
     iconAnchor: [17, 17],
 });
 
+// Professional Campus Marker
+const collegeIcon = L.divIcon({
+    className: 'custom-campus-marker',
+    html: `
+        <div class="campus-badge">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                <path d="M6 12v5c3.333 3 8.667 3 12 0v-5"/>
+            </svg>
+            <span>CAMPUS HQ</span>
+        </div>
+        <div class="marker-pin"></div>
+    `,
+    iconSize: [100, 40],
+    iconAnchor: [50, 40]
+});
+
+// Helper component to control map viewport
+const MapController = ({ focusedBusId, buses, institute }) => {
+    const map = useMap();
+    const initialCentered = useRef(false);
+
+    useEffect(() => {
+        // 1. Focus on a specific bus if requested
+        if (focusedBusId && buses[focusedBusId]) {
+            const { lat, lng } = buses[focusedBusId].location;
+            map.flyTo([lat, lng], 16, { duration: 1.5, easeLinearity: 0.25 });
+        } 
+        // 2. Initial center on Campus HQ once institute data arrives
+        else if (institute?.location && !initialCentered.current) {
+            map.flyTo([institute.location.lat, institute.location.lng], 14, { duration: 1.2 });
+            initialCentered.current = true;
+        }
+    }, [focusedBusId, buses, institute, map]);
+
+    return null;
+};
+
 const TrackLiveMap = () => {
     const [buses, setBuses] = useState({}); // Using object for O(1) updates
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState({ total: 0, lastUpdate: new Date() });
+    const [currentTime, setCurrentTime] = useState(new Date());
+    const [focusedBusId, setFocusedBusId] = useState(null);
+    const [institute, setInstitute] = useState(null);
     const socket = useRef(null);
 
     // Initial load of active buses from DB
@@ -29,10 +70,8 @@ const TrackLiveMap = () => {
             const res = await axiosInstance.get('/bus/live-location');
             if (res.data.status === 'ONLINE') {
                 const initialBuses = {};
-                // Handle both single object and array responses
                 const data = Array.isArray(res.data.data) ? res.data.data : [res.data.data];
                 data.forEach(b => {
-                    // Extract stable string ID if populated as object
                     const safeDriverId = typeof b.driverId === 'object' && b.driverId !== null ? b.driverId._id : b.driverId;
                     const driverName = b.driverId?.name || '';
                     const bus = { ...b, driverId: String(safeDriverId), driverName };
@@ -47,8 +86,18 @@ const TrackLiveMap = () => {
         }
     };
 
+    const fetchInstitute = async () => {
+        try {
+            const res = await axiosInstance.get('/admin/institute/active');
+            setInstitute(res.data);
+        } catch (err) {
+            console.error("Institute location error", err);
+        }
+    };
+
     useEffect(() => {
         fetchActiveBuses();
+        fetchInstitute();
 
         // Initialize Real-time Socket
         socket.current = io("https://collage-soon-backend.onrender.com"); // Use your render URL
@@ -83,7 +132,14 @@ const TrackLiveMap = () => {
             }
         });
 
-        return () => socket.current.disconnect();
+        const timer = setInterval(() => {
+            setCurrentTime(new Date());
+        }, 1000);
+
+        return () => {
+            socket.current.disconnect();
+            clearInterval(timer);
+        };
     }, []);
 
     const busList = Object.values(buses);
@@ -115,7 +171,7 @@ const TrackLiveMap = () => {
                     <div className="live-metric-card">
                         <Radio size={18} color="#6366f1" className="live-pulse-svg" />
                         <div className="live-metric-info">
-                            <span className="live-time">{stats.lastUpdate.toLocaleTimeString()}</span>
+                            <span className="live-time">{currentTime.toLocaleTimeString()}</span>
                             <span className="live-lab">Live Stream</span>
                         </div>
                     </div>
@@ -132,7 +188,7 @@ const TrackLiveMap = () => {
                         </div>
                     ) : (
                         <MapContainer
-                            center={[12.9716, 77.5946]}
+                            center={institute?.location ? [institute.location.lat, institute.location.lng] : [12.9716, 77.5946]}
                             zoom={13}
                             className="live-leaflet-map"
                         >
@@ -141,6 +197,17 @@ const TrackLiveMap = () => {
                                 url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
                                 attribution='&copy; OpenStreetMap &copy; CARTO'
                             />
+
+                            <MapController focusedBusId={focusedBusId} buses={buses} institute={institute} />
+
+                            {institute?.location && (
+                                <Marker 
+                                    position={[institute.location.lat, institute.location.lng]} 
+                                    icon={collegeIcon}
+                                >
+                                    <Popup><strong>Campus HQ:</strong> Official Institute Location</Popup>
+                                </Marker>
+                            )}
 
                             {busList.map((bus) => (
                                 <Marker
@@ -175,12 +242,23 @@ const TrackLiveMap = () => {
                         <div className="live-fleet-list">
                             {busList.length === 0 ? (
                                 <div className="live-no-data">
-                                    <AlertCircle size={32} />
-                                    <p>No active units detected</p>
+                                    <div className="live-empty-icon-box">
+                                        <AlertCircle size={48} color="#6366f1" />
+                                        <div className="live-empty-pulse"></div>
+                                    </div>
+                                    <h4>No Active Units</h4>
+                                    <p>The fleet is currently stationary or offline. Updates will appear as soon as a unit comes online.</p>
+                                    <button className="live-refresh-btn" onClick={fetchActiveBuses}>
+                                        <RefreshCcw size={14} /> Check for updates
+                                    </button>
                                 </div>
                             ) : (
                                 busList.map(bus => (
-                                    <div className="live-bus-item" key={bus.driverId}>
+                                    <div 
+                                        className={`live-bus-item ${focusedBusId === bus.driverId ? 'focused' : ''}`} 
+                                        key={bus.driverId}
+                                        onClick={() => setFocusedBusId(bus.driverId)}
+                                    >
                                         <div className="live-bus-icon-v">
                                             <BusFront size={20} color="#f59e0b" />
                                         </div>

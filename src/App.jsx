@@ -9,6 +9,8 @@ import Drivers from './components/Drivers';
 import AdminBroadcast from './components/AdminBroadcast';
 import TrackLiveMap from './components/TrackLiveMap';
 import BroadcastArchive from './components/BroadcastArchive';
+import BroadcastDetail from './components/BroadcastDetail';
+import CampusSet from './components/CampusSet';
 
 function App() {
   return (
@@ -24,6 +26,8 @@ function App() {
         <Route path="map" element={<TrackLiveMap />} />
         <Route path="broadcast" element={<AdminBroadcast />} />
         <Route path="broadcast-archive" element={<BroadcastArchive />} />
+        <Route path="broadcast-archive/:id/:type" element={<BroadcastDetail />} />
+        <Route path="campus-setup" element={<CampusSet />} />
 
       </Route>
     </Routes>

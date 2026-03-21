@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import axiosInstance from '../service';
 import { 
   Search, Clock, Calendar, Target, 
@@ -11,12 +12,29 @@ import './BroadcastArchive.css';
 function BroadcastArchive() {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [teachers, setTeachers] = useState([]);
+  const [selectedTeacherId, setSelectedTeacherId] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('all'); // 'all', 'admin', 'teacher', 'driver'
+  const [deleteModal, setDeleteModal] = useState({ show: false, id: null, type: null });
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchLogs();
+    fetchTeachers();
   }, []);
+
+  const fetchTeachers = async () => {
+    try {
+      const res = await axiosInstance.get('/view/teachers');
+      // Ensure we set an array even if the structure is different
+      const teacherData = Array.isArray(res.data) ? res.data : (res.data?.teachers || []);
+      setTeachers(teacherData);
+    } catch (err) {
+      console.error("Teacher fetch error", err);
+      setTeachers([]); // Fallback to empty array
+    }
+  };
 
   const fetchLogs = async () => {
     try {
@@ -30,27 +48,37 @@ function BroadcastArchive() {
     }
   };
 
-  const handleDeleteLog = async (id, type) => {
-    if (!window.confirm("Are you sure you want to delete this log entry permanently?")) return;
-    
+  const handleDeleteLog = async () => {
+    const { id, type } = deleteModal;
     try {
       await axiosInstance.delete(`/admin/broadcast/${id}/${type}`);
-      // Refresh list
       fetchLogs();
+      setDeleteModal({ show: false, id: null, type: null });
     } catch (err) {
       console.error("Delete error", err);
       alert("Failed to delete log entry");
     }
   };
 
+  const openDeleteModal = (e, id, type) => {
+    e.stopPropagation();
+    setDeleteModal({ show: true, id, type });
+  };
+
   // --- FILTER LOGIC ---
   const filteredLogs = logs.filter(log => {
     // 1. Filter by Search Term
     const matchesSearch = log.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          log.message.toLowerCase().includes(searchTerm.toLowerCase());
+                          log.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          (log.senderName && log.senderName.toLowerCase().includes(searchTerm.toLowerCase()));
     
     // 2. Filter by Tab (Sender Role)
-    const matchesTab = activeTab === 'all' || log.senderRole === activeTab;
+    let matchesTab = activeTab === 'all' || log.senderRole === activeTab;
+
+    // 3. Special Faculty Filter
+    if (activeTab === 'teacher' && selectedTeacherId !== 'all') {
+      matchesTab = log.senderId === selectedTeacherId;
+    }
 
     return matchesSearch && matchesTab;
   });
@@ -98,6 +126,24 @@ function BroadcastArchive() {
           </button>
         ))}
       </div>
+      
+      {/* --- FACULTY SELECTOR (Only shown for teacher tab) --- */}
+      {/* {activeTab === 'teacher' && (
+        <div className="Broadcast-arch-faculty-filter">
+          <User size={18} color="#94a3b8" />
+          <span className="Broadcast-arch-filter-label">Filter by Faculty:</span>
+          <select 
+            className="Broadcast-arch-faculty-select"
+            value={selectedTeacherId}
+            onChange={(e) => setSelectedTeacherId(e.target.value)}
+          >
+            <option value="all">All Faculty Members</option>
+            {Array.isArray(teachers) && teachers.map(teacher => (
+              <option key={teacher._id} value={teacher._id}>{teacher.name}</option>
+            ))}
+          </select>
+        </div>
+      )} */}
 
       {/* --- CONTENT LIST --- */}
       <div className="Broadcast-arch-content-scroller">
@@ -132,7 +178,7 @@ function BroadcastArchive() {
                   
                   <button 
                     className="Broadcast-arch-delete-btn"
-                    onClick={() => handleDeleteLog(log._id, log.type)}
+                    onClick={(e) => openDeleteModal(e, log._id, log.type || 'General')}
                     title="Delete permanently"
                   >
                     <Trash2 size={16} />
@@ -140,33 +186,69 @@ function BroadcastArchive() {
                 </div>
 
                 <div className="Broadcast-arch-card-body">
-                  <h3 className="Broadcast-arch-log-title">{log.title}</h3>
-                  <p className="Broadcast-arch-log-message">{log.message}</p>
+                  <div className="Broadcast-arch-type-row">
+                    <span className={`Broadcast-arch-type-tag type-${log.type?.toLowerCase()}`}>
+                       {log.type || 'General'}
+                    </span>
+                  </div>
+                  <h3 
+                    className="Broadcast-arch-log-title clickable"
+                    onClick={() => navigate(`/admin/broadcast-archive/${log._id}/${log.type || 'General'}`)}
+                  >
+                    {log.title}
+                  </h3>
                 </div>
 
                 <div className="Broadcast-arch-card-footer">
-                  <div className="Broadcast-arch-sender-profile">
-                    <div className={`Broadcast-arch-avatar-mini Broadcast-arch-av-${log.senderRole}`}>
-                        {log.senderName ? log.senderName.charAt(0).toUpperCase() : 'S'}
-                    </div>
-                    <span className="Broadcast-arch-sender-name">Origin: {log.senderName || 'Authorized User'}</span>
+                  <div className="Broadcast-arch-timestamp">
+                    <Clock size={12} /> {new Date(log.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                   </div>
-                  <div className="Broadcast-arch-status-indicator">
-                    <Target size={14} color="#6366f1" />
-                    <span className="Broadcast-arch-status-text">Target: {log.targetAudience}</span>
+                  <div className="Broadcast-arch-datestamp">
+                    <Calendar size={12} /> {new Date(log.createdAt).toLocaleDateString()}
                   </div>
                 </div>
               </motion.div>
             ))}
           </div>
         ) : (
-          <div className="Broadcast-arch-empty-state">
-            <Megaphone size={50} color="#1e293b" />
-            <h2>No filtered logs found</h2>
-            <p>Zero broadcast records match the current criteria for {activeTab}.</p>
+          <div className="Broadcast-arch-premium-empty">
+            <div className="arch-empty-icon-capsule">
+              <Megaphone size={60} color="#6366f1" className="arch-empty-pulse-icon" />
+              <div className="arch-empty-ring"></div>
+            </div>
+            <h3>No Records Captured</h3>
+            <p>The institutional logs for the {activeTab} department are currently clear. Zero broadcast entries match your current search.</p>
+            <div className="arch-empty-hint">Try switching departments or broadening your search parameters.</div>
           </div>
         )}
       </div>
+
+      {/* --- CUSTOM DELETE MODAL --- */}
+      {deleteModal.show && (
+        <div className="arch-modal-overlay">
+          <div className="arch-modal-card">
+            <div className="arch-modal-icon">
+              <Trash2 size={32} color="#ef4444" />
+            </div>
+            <h2>Confirm Deletion</h2>
+            <p>This action is irreversible. Are you sure you want to permanently erase this record from the institutional archives?</p>
+            <div className="arch-modal-actions">
+              <button 
+                className="arch-modal-btn cancel" 
+                onClick={() => setDeleteModal({ show: false, id: null, type: null })}
+              >
+                Keep Record
+              </button>
+              <button 
+                className="arch-modal-btn confirm" 
+                onClick={handleDeleteLog}
+              >
+                Confirm Erase
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

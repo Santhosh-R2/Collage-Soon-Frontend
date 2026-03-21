@@ -11,7 +11,8 @@ import {
   LogOut, 
   ShieldCheck, 
   AlertTriangle,
-  ListFilter
+  ListFilter,
+  MapPin
 } from 'lucide-react';
 import './AdminLayout.css';
 
@@ -63,6 +64,9 @@ const AdminLayout = () => {
      { name: 'Broadcast Logs', 
       path: '/admin/broadcast-archive',
        icon: <ListFilter size={20} /> },
+     { name: 'Campus Config', 
+      path: '/admin/campus-setup',
+       icon: <MapPin size={20} /> },
   ];
 
   return (

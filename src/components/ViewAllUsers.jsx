@@ -183,7 +183,19 @@ function ViewAllUsers() {
                   </tr>
                 ))
               ) : (
-                <tr><td colSpan="4" className="viewuser-empty-row">No active records found in the {role} department.</td></tr>
+                <tr>
+                  <td colSpan="4">
+                    <div className="viewuser-premium-empty">
+                      <div className="viewuser-empty-icon-capsule">
+                        <Users size={60} color="#6366f1" className="viewuser-empty-pulse-icon" />
+                        <div className="viewuser-empty-ring"></div>
+                      </div>
+                      <h3>No Verified {role.charAt(0).toUpperCase() + role.slice(1)}s Found</h3>
+                      <p>Currently, there are no active records matching your filter criteria in the central {role} directory.</p>
+                      <div className="viewuser-empty-hint">Try adjusting your search or switching to a different department.</div>
+                    </div>
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>

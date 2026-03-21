@@ -158,10 +158,14 @@ function UsersRequest() {
             ))}
           </div>
         ) : (
-          <div className="center-state empty">
-            <XCircle size={60} color="#334155" />
+          <div className="requests-premium-empty">
+            <div className="requests-empty-icon-capsule">
+              <UserCheck size={60} color="#6366f1" className="requests-empty-pulse-icon" />
+              <div className="requests-empty-ring"></div>
+            </div>
             <h2>Zero Pending Requests</h2>
-            <p>All staff and faculty accounts are currently verified.</p>
+            <p>All staff and faculty accounts are currently verified. You're all caught up with the institutional registry.</p>
+            <div className="requests-empty-hint">New arrival requests will appear here for your formal authorization.</div>
           </div>
         )}
       </div>

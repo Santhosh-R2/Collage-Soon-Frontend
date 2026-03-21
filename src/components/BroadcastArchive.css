@@ -117,19 +117,229 @@
 
 .Broadcast-arch-status-text { color: #94a3b8; font-size: 0.75rem; font-weight: 600; margin-left: 6px; }
 
-/* States */
-.Broadcast-arch-loading-state, .Broadcast-arch-empty-state {
-    text-align: center; padding: 100px 0; color: #475569; display: flex; flex-direction: column; align-items: center; gap: 15px;
+/* --- Faculty Filter Selector --- */
+.Broadcast-arch-faculty-filter {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #0f172a;
+    border: 1px solid #334155;
+    padding: 12px 20px;
+    border-radius: 14px;
+    margin-bottom: 20px;
+    width: fit-content;
+    animation: Broadcast-arch-fadeIn 0.3s ease-out;
 }
-.Broadcast-arch-spinner { animation: Broadcast-arch-spin 1s linear infinite; color: #6366f1; }
+
+.Broadcast-arch-filter-label {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.Broadcast-arch-faculty-select {
+    background: transparent;
+    border: none;
+    color: #6366f1;
+    font-size: 0.85rem;
+    font-weight: 700;
+    outline: none;
+    cursor: pointer;
+    padding-right: 10px;
+}
+
+.Broadcast-arch-faculty-select option {
+    background: #1e293b;
+    color: #fff;
+}
+
+/* --- Type Tags --- */
+.Broadcast-arch-type-row {
+    margin-bottom: 10px;
+}
+
+.Broadcast-arch-type-tag {
+    font-size: 0.6rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+}
+
+.type-general { background: rgba(99, 102, 241, 0.1); color: #818cf8; }
+.type-exam { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+.type-assignment { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+.type-sos { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+
+.Broadcast-arch-log-title.clickable {
+    cursor: pointer;
+    transition: 0.3s;
+}
+.Broadcast-arch-log-title.clickable:hover {
+    color: #6366f1;
+    transform: translateX(5px);
+}
+
+/* --- CUSTOM MODAL --- */
+.arch-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 23, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: Broadcast-arch-fadeIn 0.3s ease-out;
+}
+
+.arch-modal-card {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 24px;
+    padding: 40px;
+    width: 100%;
+    max-width: 450px;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+
+.arch-modal-icon {
+    width: 64px;
+    height: 64px;
+    background: rgba(239, 68, 68, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+}
+
+.arch-modal-card h2 {
+    color: #fff;
+    margin: 0 0 10px 0;
+    font-size: 1.5rem;
+}
+
+.arch-modal-card p {
+    color: #94a3b8;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+.arch-modal-actions {
+    display: flex;
+    gap: 15px;
+}
+
+.arch-modal-btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+    border: none;
+}
+
+.arch-modal-btn.cancel {
+    background: #0f172a;
+    color: #94a3b8;
+    border: 1px solid #334155;
+}
+
+.arch-modal-btn.cancel:hover { background: #334155; color: #fff; }
+
+.arch-modal-btn.confirm {
+    background: #ef4444;
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.2);
+}
+
+.arch-modal-btn.confirm:hover { background: #dc2626; transform: translateY(-2px); }
 
 @keyframes Broadcast-arch-spin { to { transform: rotate(360deg); } }
 @keyframes Broadcast-arch-fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+/* --- PREMIUM EMPTY STATE --- */
+.Broadcast-arch-premium-empty {
+    padding: 100px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: rgba(15, 23, 42, 0.4);
+    border-radius: 30px;
+    border: 1px dashed rgba(99, 102, 241, 0.2);
+    animation: Broadcast-arch-fadeIn 0.8s ease-out;
+}
+
+.arch-empty-icon-capsule {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    background: rgba(99, 102, 241, 0.05);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.arch-empty-pulse-icon {
+    position: relative;
+    z-index: 5;
+    filter: drop-shadow(0 0 15px rgba(99, 102, 241, 0.3));
+}
+
+.arch-empty-ring {
+    position: absolute;
+    inset: -15px;
+    border: 2px solid rgba(99, 102, 241, 0.1);
+    border-radius: 50%;
+    animation: archEmptyRipple 2.5s infinite;
+}
+
+.Broadcast-arch-premium-empty h3 {
+    font-size: 1.6rem;
+    color: #fff;
+    margin: 0 0 12px 0;
+    font-weight: 800;
+}
+
+.Broadcast-arch-premium-empty p {
+    color: #94a3b8;
+    font-size: 1rem;
+    max-width: 500px;
+    line-height: 1.6;
+    margin: 0 0 25px 0;
+}
+
+.arch-empty-hint {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    color: #64748b;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+@keyframes archEmptyRipple {
+    0% { transform: scale(0.8); opacity: 0; }
+    50% { opacity: 0.4; }
+    100% { transform: scale(1.3); opacity: 0; }
+}
 
 @media (max-width: 800px) {
     .Broadcast-arch-header { flex-direction: column; align-items: flex-start; gap: 15px; }
     .Broadcast-arch-tabs-container { overflow-x: auto; width: 100%; padding-bottom: 10px; }
     .Broadcast-arch-tab-btn { flex-shrink: 0; }
+    .Broadcast-arch-faculty-filter { width: 100%; box-sizing: border-box; }
 }
 
 /* Delete Button Styles */

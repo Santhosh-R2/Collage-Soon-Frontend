@@ -2,17 +2,30 @@ import React, { useState, useEffect } from 'react';
 import axiosInstance from '../service';
 import { 
   Bus, Users, Search, Settings, X, CheckCircle, 
-  Map as MapIcon, Navigation, Mail, Home, Loader2, Save
+  Map as MapIcon, Navigation, Mail, Home, Loader2, Save,
+  CheckCircle2, AlertCircle
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import './Drivers.css';
 
 // Professional Custom Icons
-const collegeIcon = new L.Icon({
-    iconUrl: 'https://cdn-icons-png.flaticon.com/512/8074/8074788.png',
-    iconSize: [38, 38], iconAnchor: [19, 38]
+const collegeIcon = L.divIcon({
+    className: 'custom-campus-marker',
+    html: `
+        <div class="campus-badge">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                <path d="M6 12v5c3.333 3 8.667 3 12 0v-5"/>
+            </svg>
+            <span>CAMPUS</span>
+        </div>
+        <div class="marker-pin"></div>
+    `,
+    iconSize: [80, 40],
+    iconAnchor: [40, 40]
 });
 
 const passengerIcon = new L.Icon({
@@ -20,12 +33,14 @@ const passengerIcon = new L.Icon({
     iconSize: [30, 30], iconAnchor: [15, 30]
 });
 
+// DEFAULT FALLBACK (Will be replaced by dynamic data)
 const COLLEGE_LOC = [12.9716, 77.5946];
 
 function Drivers() {
   const [drivers, setDrivers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
   
   // Modal States
   const [showInitModal, setShowInitModal] = useState(false);
@@ -36,8 +51,22 @@ function Drivers() {
   const [busNumber, setBusNumber] = useState('');
   const [passengers, setPassengers] = useState([]);
   const [fetchingData, setFetchingData] = useState(false);
+  const [institute, setInstitute] = useState(null);
+  const [roadPoints, setRoadPoints] = useState([]);
 
-  useEffect(() => { fetchDrivers(); }, []);
+  useEffect(() => { 
+    fetchDrivers(); 
+    fetchInstitute();
+  }, []);
+
+  const fetchInstitute = async () => {
+    try {
+      const res = await axiosInstance.get('/admin/institute/active');
+      setInstitute(res.data);
+    } catch (err) {
+      console.error("Institute location error", err);
+    }
+  };
 
   const fetchDrivers = async () => {
     try {
@@ -67,18 +96,23 @@ function Drivers() {
   };
 
   const submitBusInit = async () => {
-    if (!busNumber) return alert("Please enter a bus number");
+    if (!busNumber) return showToast("Please enter a bus number", "error");
     try {
       const response = await axiosInstance.post('/bus/init', {
         driverId: selectedDriver._id,
         busNumber: busNumber
       });
-      alert(response.data.message);
+      showToast(response.data.message || "Bus configured successfully!", "success");
       setShowInitModal(false);
       fetchDrivers();
     } catch (err) {
-      alert("Failed to update bus information");
+      showToast("Failed to update bus information", "error");
     }
+  };
+
+  const showToast = (message, type = 'success') => {
+    setToast({ show: true, message, type });
+    setTimeout(() => setToast({ show: false, message: '', type: 'success' }), 4000);
   };
 
   // --- 2. ROUTE GENERATION (FROM PASSENGERS) ---
@@ -86,30 +120,89 @@ function Drivers() {
     setSelectedDriver(driver);
     setFetchingData(true);
     setShowRouteModal(true);
+    setRoadPoints([]); // Reset previous road path
 
     try {
       const res = await axiosInstance.get(`/bus/my-passengers?driverId=${driver._id}`);
-      // Filter passengers with valid GPS
       const list = (res.data || []).filter(p => p.homeLocation?.lat);
       setPassengers(list);
+      
+      // Generate Road Route
+      if (list.length > 0) {
+        generateRoadRoute(list);
+      }
     } catch (err) {
-      alert("Error loading route data");
+      showToast("Error loading route data", "error");
     } finally {
       setFetchingData(false);
     }
   };
 
+  const generateRoadRoute = async (stops) => {
+    try {
+      const origin = institute?.location || { lat: COLLEGE_LOC[0], lng: COLLEGE_LOC[1] };
+      
+      // Construct coordinates string for OSRM: lng,lat;lng,lat;...
+      const coords = [
+        `${origin.lng},${origin.lat}`,
+        ...stops.map(s => `${s.homeLocation.lng},${s.homeLocation.lat}`),
+        `${origin.lng},${origin.lat}`
+      ].join(';');
+
+      const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`;
+      const response = await fetch(osrmUrl);
+      const data = await response.json();
+
+      if (data.routes && data.routes[0]) {
+        // OSRM returns [lng, lat], Leaflet wants [lat, lng]
+        const flipped = data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
+        setRoadPoints(flipped);
+      }
+    } catch (err) {
+      console.error("OSRM Routing Error:", err);
+      // Fallback to straight lines if OSRM fails
+      setRoadPoints([]);
+    }
+  };
+
   const getPolylinePath = () => {
-    const path = [COLLEGE_LOC];
+    if (roadPoints.length > 0) return roadPoints;
+    
+    // Straight line fallback
+    const origin = institute?.location || { lat: COLLEGE_LOC[0], lng: COLLEGE_LOC[1] };
+    const path = [[origin.lat, origin.lng]];
     passengers.forEach(p => path.push([p.homeLocation.lat, p.homeLocation.lng]));
-    path.push(COLLEGE_LOC); // Return trip
+    path.push([origin.lat, origin.lng]);
     return path;
+  };
+
+  const getMapCenter = () => {
+    if (institute?.location) return [institute.location.lat, institute.location.lng];
+    return COLLEGE_LOC;
   };
 
   const filtered = drivers.filter(d => d.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
   return (
     <div className="drivers-page">
+      {/* --- PREMIUM TOAST --- */}
+      <AnimatePresence>
+        {toast.show && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20, x: '-50%' }}
+            animate={{ opacity: 1, y: 0, x: '-50%' }}
+            exit={{ opacity: 0, scale: 0.95, x: '-50%' }}
+            className={`premium-fleet-toast ${toast.type}`}
+          >
+            <div className="toast-icon-box">
+              {toast.type === 'success' ? <CheckCircle2 size={18} /> : <AlertCircle size={18} />}
+            </div>
+            <span className="toast-message">{toast.message}</span>
+            <div className="toast-progress"></div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Header */}
       <div className="fleet-header">
         <div className="header-left">
@@ -127,30 +220,46 @@ function Drivers() {
 
       {/* Grid */}
       <div className="driver-grid">
-        {loading ? <div className="status-msg">Accessing Secure Database...</div> : 
-        filtered.map(driver => (
-          <div className="driver-card" key={driver._id}>
-            <div className="card-top">
-              <div className="driver-avatar-sq">{driver.name.charAt(0)}</div>
-              <div className="driver-meta">
-                <h3>{driver.name}</h3>
-                <span className="verify-badge"><CheckCircle size={12} /> Authorized Personnel</span>
+        {loading ? (
+          <div className="status-msg">
+            <Loader2 className="spin" size={32} />
+            <span>Accessing Secure Database...</span>
+          </div>
+        ) : filtered.length > 0 ? (
+          filtered.map(driver => (
+            <div className="driver-card" key={driver._id}>
+              <div className="card-top">
+                <div className="driver-avatar-sq">{driver.name.charAt(0)}</div>
+                <div className="driver-meta">
+                  <h3>{driver.name}</h3>
+                  <span className="verify-badge"><CheckCircle size={12} /> Authorized Personnel</span>
+                </div>
+              </div>
+              <div className="card-body">
+                <div className="data-row"><Mail size={14} /> {driver.email}</div>
+                <div className="data-row"><Navigation size={14} /> Campus Main Gate</div>
+              </div>
+              <div className="card-actions">
+                <button className="btn-setup" onClick={() => handleOpenInit(driver)}>
+                  <Settings size={14} /> Config Bus
+                </button>
+                <button className="btn-route" onClick={() => handleViewRoute(driver)}>
+                  <MapIcon size={14} /> View Route
+                </button>
               </div>
             </div>
-            <div className="card-body">
-              <div className="data-row"><Mail size={14} /> {driver.email}</div>
-              <div className="data-row"><Navigation size={14} /> Campus Main Gate</div>
+          ))
+        ) : (
+          <div className="fleet-premium-empty">
+            <div className="fleet-empty-icon-capsule">
+              <Bus size={60} color="#f59e0b" className="fleet-empty-pulse-icon" />
+              <div className="fleet-empty-ring"></div>
             </div>
-            <div className="card-actions">
-              <button className="btn-setup" onClick={() => handleOpenInit(driver)}>
-                <Settings size={14} /> Config Bus
-              </button>
-              <button className="btn-route" onClick={() => handleViewRoute(driver)}>
-                <MapIcon size={14} /> View Route
-              </button>
-            </div>
+            <h3>No Active Drivers Found</h3>
+            <p>The operational registry currently has no verified transport personnel matching your search.</p>
+            <div className="fleet-empty-hint">Verify driver accounts in the Verification Center or check your database connectivity.</div>
           </div>
-        ))}
+        )}
       </div>
 
       {/* --- MODAL: INITIALIZE / UPDATE BUS --- */}
@@ -190,7 +299,9 @@ function Drivers() {
           <div className="route-modal-card">
             <div className="modal-head">
               <div className="head-title-combined">
-                <Navigation size={20} color="#6366f1" />
+                <div className="nav-icon-box">
+                  <Navigation size={20} color="#6366f1" />
+                </div>
                 <h3>Route Manifest: {selectedDriver?.name}</h3>
               </div>
               <button onClick={() => setShowRouteModal(false)}><X /></button>
@@ -219,17 +330,40 @@ function Drivers() {
                 </div>
               </div>
 
-              <div className="map-display">
-                {fetchingData ? <div className="map-load">Mapping Path...</div> : (
-                  <MapContainer center={COLLEGE_LOC} zoom={13} className="leaflet-frame">
-                    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                    <Marker position={COLLEGE_LOC} icon={collegeIcon}><Popup>College Hub</Popup></Marker>
+              <div className="map-display-v2">
+                {fetchingData ? (
+                  <div className="map-loading-state">
+                    <Loader2 className="spin" size={40} />
+                    <p>Optimizing Road Route...</p>
+                  </div>
+                ) : (
+                  <MapContainer center={getMapCenter()} zoom={13} className="leaflet-frame-premium">
+                    <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
+                    <Marker position={getMapCenter()} icon={collegeIcon}>
+                      <Popup>Campus HQ: Correct Database Location</Popup>
+                    </Marker>
                     {passengers.map(p => (
                       <Marker key={p._id} position={[p.homeLocation.lat, p.homeLocation.lng]} icon={passengerIcon}>
-                        <Popup>{p.name}</Popup>
+                        <Popup>
+                          <strong>{p.name}</strong><br/>
+                          {p.role} - Pickup Point
+                        </Popup>
                       </Marker>
                     ))}
-                    <Polyline positions={getPolylinePath()} color="#6366f1" weight={4} dashArray="10, 15" opacity={0.8} />
+                    <Polyline 
+                      positions={getPolylinePath()} 
+                      color="#6366f1" 
+                      weight={5} 
+                      opacity={0.9} 
+                      lineJoin="round"
+                    />
+                    {/* Glowing effect line */}
+                    <Polyline 
+                      positions={getPolylinePath()} 
+                      color="#818cf8" 
+                      weight={12} 
+                      opacity={0.2} 
+                    />
                   </MapContainer>
                 )}
               </div>
