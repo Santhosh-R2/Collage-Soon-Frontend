@@ -3,7 +3,7 @@ import axiosInstance from '../service';
 import { 
   Search, MapPin, X, Users, User, Bus, 
   Briefcase, GraduationCap, ChevronDown, Filter,
-  History, Calendar, TrendingUp, UserCheck, Mail, ShieldCheck
+  History, Calendar, TrendingUp, UserCheck, Mail, ShieldCheck, Trash2
 } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -31,6 +31,9 @@ function ViewAllUsers() {
   const [showHistory, setShowHistory] = useState(false);
   const [historyData, setHistoryData] = useState({ totalPresent: 0, history: [] });
   const [historyLoading, setHistoryLoading] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     fetchUsersByRole();
@@ -73,6 +76,29 @@ function ViewAllUsers() {
   const openMap = (user) => {
     setSelectedUser(user);
     setShowMap(true);
+  };
+
+  const initDelete = (user) => {
+    setUserToDelete(user);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!userToDelete) return;
+    setIsDeleting(true);
+    try {
+      const response = await axiosInstance.delete(`/admin/user/${userToDelete._id}`);
+      if (response.status === 200) {
+        setUsers(users.filter(u => u._id !== userToDelete._id));
+        setShowDeleteModal(false);
+        setUserToDelete(null);
+      }
+    } catch (err) {
+      console.error('Error deleting user:', err);
+      alert('Failed to delete user. Make sure you have the correct permissions.');
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const filteredUsers = users.filter(u => 
@@ -177,6 +203,9 @@ function ViewAllUsers() {
                         </button>
                         <button className="viewuser-btn viewuser-btn-hist" onClick={() => openAttendance(user)}>
                           <History size={14} /> Attendance
+                        </button>
+                        <button className="viewuser-btn viewuser-btn-del" onClick={() => initDelete(user)}>
+                          <Trash2 size={14} /> Delete
                         </button>
                       </div>
                     </td>
@@ -287,6 +316,37 @@ function ViewAllUsers() {
                    </>
                 )}
              </div>
+          </div>
+        </div>
+      )}
+
+      {/* --- DELETE CONFIRMATION MODAL --- */}
+      {showDeleteModal && userToDelete && (
+        <div className="viewuser-modal-overlay" onClick={() => !isDeleting && setShowDeleteModal(false)}>
+          <div className="viewuser-modal-card viewuser-delete-modal" onClick={e => e.stopPropagation()}>
+            <div className="viewuser-delete-header">
+              <div className="viewuser-delete-icon-capsule">
+                <Trash2 size={32} color="#ef4444" />
+              </div>
+              <h3>Confirm Deletion</h3>
+              <p>Are you sure you want to permanently delete <strong>{userToDelete.name}</strong>? This action cannot be undone.</p>
+            </div>
+            <div className="viewuser-delete-actions">
+              <button 
+                className="viewuser-cancel-btn" 
+                onClick={() => setShowDeleteModal(false)}
+                disabled={isDeleting}
+              >
+                Cancel
+              </button>
+              <button 
+                className="viewuser-confirm-del-btn" 
+                onClick={confirmDelete}
+                disabled={isDeleting}
+              >
+                {isDeleting ? 'Deleting...' : 'Delete User'}
+              </button>
+            </div>
           </div>
         </div>
       )}

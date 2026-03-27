@@ -166,19 +166,24 @@ function ViewAllTeachers() {
         )}
       </div>
 
-      {/* --- MODAL 1: MAP --- */}
+      {/* --- MODAL 1: PREMIUM MAP --- */}
       {showMap && selectedTeacher && (
-        <div className="modal-overlay">
-          <div className="modal-card map-modal">
+        <div className="map-overlay" onClick={() => setShowMap(false)}>
+          <div className="map-modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <h3>Residence: {selectedTeacher.name}</h3>
+              <div className="modal-title-combined">
+                 <div className="t-avatar" style={{width: '34px', height: '34px', fontSize: '14px', borderRadius: '10px'}}>
+                   {selectedTeacher.name.charAt(0)}
+                 </div>
+                 <h3 style={{margin: 0, fontSize: '1.1rem', fontWeight: 700}}>Residence Audit: {selectedTeacher.name}</h3>
+              </div>
               <button className="close-modal" onClick={() => setShowMap(false)}><X size={20} /></button>
             </div>
-            <div className="modal-body map-body">
-              <MapContainer center={[selectedTeacher.homeLocation.lat, selectedTeacher.homeLocation.lng]} zoom={14} className="leaflet-map">
+            <div style={{height: '480px', width: '100%', background: '#0f172a'}}>
+              <MapContainer center={[selectedTeacher.homeLocation.lat, selectedTeacher.homeLocation.lng]} zoom={14} style={{height: '100%', width: '100%'}}>
                 <TileLayer url="https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}" attribution="&copy; Google Maps" />
                 <Marker position={[selectedTeacher.homeLocation.lat, selectedTeacher.homeLocation.lng]}>
-                  <Popup>{selectedTeacher.name}</Popup>
+                  <Popup>{selectedTeacher.name}'s Verified Address</Popup>
                 </Marker>
               </MapContainer>
             </div>

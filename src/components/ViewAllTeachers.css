@@ -308,7 +308,7 @@
     cursor: pointer;
 }
 
-.modal-body {
+.modal-body.map-body {
     height: 400px;
     width: 100%;
 }

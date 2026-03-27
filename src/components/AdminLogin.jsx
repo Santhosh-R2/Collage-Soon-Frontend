@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Mail, Lock, ArrowRight, AlertCircle, ShieldCheck, Sparkles, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, Loader2, ArrowRight, Eye, EyeOff, ShieldCheck, Database, Navigation } from 'lucide-react';
 import axiosInstance from '../service';
-import Logo from '../assets/campus.png'; // Using your Logo asset
 import './AdminLogin.css';
 
 const AdminLogin = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false); // Toggle state
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -28,145 +27,103 @@ const AdminLogin = () => {
         navigate('/admin/dashboard');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Verification failed. Please check credentials.');
+      setError(err.response?.data?.message || 'Invalid system credentials.');
     } finally {
       setLoading(false);
     }
   };
 
-  const staggerContainer = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
-  };
-
-  const fadeInUp = {
-    hidden: { y: 20, opacity: 0 },
-    visible: { y: 0, opacity: 1, transition: { duration: 0.6, ease: "easeOut" } }
-  };
-
   return (
-    <div className="login-viewport">
-      <div className="bg-grid-overlay"></div>
-      <div className="radial-glow-1"></div>
+    <div className="admin-login-wrapper">
+      
+      {/* --- ANIMATED BACKGROUND OBJECTS --- */}
+      <div className="animated-bg-container">
+        <div className="floating-shape shape-1"></div>
+        <div className="floating-shape shape-2"></div>
+        <div className="floating-shape shape-3"></div>
+        <div className="floating-icon icon-1"><ShieldCheck size={40} /></div>
+        <div className="floating-icon icon-2"><Database size={30} /></div>
+        <div className="floating-icon icon-3"><Navigation size={35} /></div>
+      </div>
 
-      <div className="split-layout">
-        
-        {/* --- LEFT SIDE: BRANDING --- */}
-        <section className="brand-visual-section">
-          <motion.div 
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
-            className="brand-content-wrapper"
-          >
-             <div className="premium-tag">
-               <Sparkles size={14} />
-               <span>Enterprise Management v2.0</span>
-             </div>
-             
-             {/* Integrated Logo and Name */}
-             <div className="main-logo-area">
-                {/* <img src={Logo} alt="Campus Zone Logo" className="desktop-logo" /> */}
-                <h1 className="brand-display-name">
-                    Campus <span className="text-gradient">Zone</span>
-                </h1>
-             </div>
+      <div className="admin-login-container">
+        <motion.div 
+          className="admin-login-card glass-panel"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        >
+          <div className="admin-login-header">
+            <div className="admin-logo-mark indigo-glow">
+              <ShieldCheck size={28} color="#818cf8" />
+            </div>
+            <h1>Campus Zone Admin</h1>
+            <p>Authenticate to access the command center</p>
+          </div>
 
-             <h2 className="hero-heading">
-               The Intelligence <br />Behind Modern Campus.
-             </h2>
-             <p className="hero-description">
-               A unified institutional command center for real-time logistics, 
-               academic oversight, and campus-wide safety.
-             </p>
-
-             <div className="abstract-visual-node">
-                <div className="node-ring ring-1"></div>
-                <ShieldCheck size={80} className="shield-icon-central" />
-             </div>
-          </motion.div>
-        </section>
-
-        {/* --- RIGHT SIDE: FORM --- */}
-        <section className="login-form-section">
-          <motion.div 
-            variants={staggerContainer}
-            initial="hidden"
-            animate="visible"
-            className="form-container-card"
-          >
-            {/* Mobile Header with Logo */}
-            <motion.div variants={fadeInUp} className="form-brand-header">
-               {/* <img src={Logo} alt="Logo" className="mobile-logo" /> */}
-               <h3>Campus Zone</h3>
-            </motion.div>
-
-            <motion.div variants={fadeInUp} className="form-text-group">
-              <h2>Administrator Login</h2>
-              <p>Please enter your secure access credentials.</p>
-            </motion.div>
-
+          <form onSubmit={handleLogin} className="admin-login-form">
             {error && (
-              <motion.div variants={fadeInUp} className="status-error-box">
-                <AlertCircle size={18} />
-                <span>{error}</span>
+              <motion.div 
+                initial={{ opacity: 0, x: -10 }} 
+                animate={{ opacity: 1, x: 0 }} 
+                className="admin-login-error"
+              >
+                {error}
               </motion.div>
             )}
 
-            <form onSubmit={handleLogin} className="login-submission-form">
-              <motion.div variants={fadeInUp} className="custom-input-group">
-                <label>System Email</label>
-                <div className="input-inner-wrapper">
-                  <Mail className="input-icon-left" size={18} />
-                  <input 
-                    type="email" 
-                    placeholder="admin@campuszone.edu"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
-              </motion.div>
+            <div className="admin-input-group">
+              <label htmlFor="email">Administrative Email</label>
+              <div className="admin-input-wrapper">
+                <Mail className="admin-input-icon" size={18} />
+                <input 
+                  id="email"
+                  type="email" 
+                  placeholder="Enter email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
 
-              <motion.div variants={fadeInUp} className="custom-input-group">
-                <label>Master Security Key</label>
-                <div className="input-inner-wrapper">
-                  <Lock className="input-icon-left" size={18} />
-                  <input 
-                    type={showPassword ? "text" : "password"} 
-                    placeholder="••••••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                  {/* Password Toggle Icon */}
-                  <button 
-                    type="button" 
-                    className="password-toggle-btn"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
-              </motion.div>
+            <div className="admin-input-group">
+              <label htmlFor="password">Security Password</label>
+              <div className="admin-input-wrapper">
+                <Lock className="admin-input-icon" size={18} />
+                <input 
+                  id="password"
+                  type={showPassword ? "text" : "password"} 
+                  placeholder="••••••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                <button 
+                  type="button" 
+                  className="password-toggle-btn"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+            </div>
 
-              <motion.button 
-                variants={fadeInUp}
-                whileHover={{ y: -2, backgroundColor: "#4f46e5" }}
-                whileTap={{ scale: 0.98 }}
-                type="submit" 
-                className="auth-primary-btn" 
-                disabled={loading}
-              >
-                {loading ? <div className="auth-spinner"></div> : <>Continue to Command Center <ArrowRight size={18} /></>}
-              </motion.button>
-            </form>
+            <motion.button 
+              whileHover={{ y: -2, boxShadow: "0 10px 25px -5px rgba(99, 102, 241, 0.4)" }}
+              whileTap={{ scale: 0.98 }}
+              type="submit" 
+              className="admin-submit-btn indigo-gradient" 
+              disabled={loading}
+            >
+              {loading ? <Loader2 className="admin-btn-spinner" size={18} /> : <span>Secure Sign In <ArrowRight size={18} /></span>}
+            </motion.button>
+          </form>
 
-            <motion.div variants={fadeInUp} className="auth-footer-note">
-               <p>© {new Date().getFullYear()} Campus Zone. Secure Encrypted Session.</p>
-            </motion.div>
-          </motion.div>
-        </section>
+          <div className="admin-login-footer">
+            <p>&copy; {new Date().getFullYear()} Campus Zone Secure Systems</p>
+          </div>
+        </motion.div>
       </div>
     </div>
   );
