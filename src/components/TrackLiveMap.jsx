@@ -194,8 +194,8 @@ const TrackLiveMap = () => {
                         >
                             {/* Dark Mode Map Layer */}
                             <TileLayer
-                                url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-                                attribution='&copy; OpenStreetMap &copy; CARTO'
+                                url="https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
+                                attribution="&copy; Google Maps"
                             />
 
                             <MapController focusedBusId={focusedBusId} buses={buses} institute={institute} />

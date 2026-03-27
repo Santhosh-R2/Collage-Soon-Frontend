@@ -126,7 +126,7 @@ const CampusSet = () => {
                         <span>Click anywhere on the map to pin the new Campus HQ</span>
                     </div>
                     <MapContainer center={position} zoom={15} className="config-leaflet-frame">
-                        <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
+                        <TileLayer url="https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}" attribution="&copy; Google Maps" />
                         <LocationPicker position={position} setPosition={setPosition} />
                     </MapContainer>
                 </div>

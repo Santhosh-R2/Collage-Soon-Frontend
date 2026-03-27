@@ -176,7 +176,7 @@ function ViewAllTeachers() {
             </div>
             <div className="modal-body map-body">
               <MapContainer center={[selectedTeacher.homeLocation.lat, selectedTeacher.homeLocation.lng]} zoom={14} className="leaflet-map">
-                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                <TileLayer url="https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}" attribution="&copy; Google Maps" />
                 <Marker position={[selectedTeacher.homeLocation.lat, selectedTeacher.homeLocation.lng]}>
                   <Popup>{selectedTeacher.name}</Popup>
                 </Marker>

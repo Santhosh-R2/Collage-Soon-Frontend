@@ -215,7 +215,7 @@ function ViewAllUsers() {
             </div>
             <div className="viewuser-map-container">
               <MapContainer center={[selectedUser.homeLocation.lat, selectedUser.homeLocation.lng]} zoom={14} className="viewuser-leaflet">
-                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                <TileLayer url="https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}" attribution="&copy; Google Maps" />
                 <Marker position={[selectedUser.homeLocation.lat, selectedUser.homeLocation.lng]}>
                     <Popup>{selectedUser.name}'s Verified Address</Popup>
                 </Marker>

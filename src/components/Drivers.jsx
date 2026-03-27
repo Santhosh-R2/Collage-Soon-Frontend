@@ -338,7 +338,7 @@ function Drivers() {
                   </div>
                 ) : (
                   <MapContainer center={getMapCenter()} zoom={13} className="leaflet-frame-premium">
-                    <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
+                    <TileLayer url="https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}" attribution="&copy; Google Maps" />
                     <Marker position={getMapCenter()} icon={collegeIcon}>
                       <Popup>Campus HQ: Correct Database Location</Popup>
                     </Marker>

@@ -172,7 +172,7 @@ const BroadcastDetail = () => {
                         zoom={15} 
                         style={{ height: '400px', borderRadius: '20px' }}
                     >
-                        <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
+                        <TileLayer url="https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}" attribution="&copy; Google Maps" />
                         <Marker position={[data.location?.lat, data.location?.lng]} icon={sosIcon}>
                             <Popup>Last Known SOS Position</Popup>
                         </Marker>
