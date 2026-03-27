@@ -109,9 +109,9 @@ function UsersRequest() {
       {/* --- CONTENT --- */}
       <div className="requests-content">
         {loading ? (
-          <div className="center-state">
+          <div className="center-state" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', padding: '50px 0' }}>
             <Loader2 className="spinner" size={40} />
-            <p>Scanning for pending requests...</p>
+            <p style={{ marginTop: '10px', color: '#64748b' }}>Scanning for pending requests...</p>
           </div>
         ) : filteredUsers.length > 0 ? (
           <div className="request-grid">

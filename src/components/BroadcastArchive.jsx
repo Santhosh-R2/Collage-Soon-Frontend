@@ -148,9 +148,9 @@ function BroadcastArchive() {
       {/* --- CONTENT LIST --- */}
       <div className="Broadcast-arch-content-scroller">
         {loading ? (
-          <div className="Broadcast-arch-loading-state">
+          <div className="Broadcast-arch-loading-state" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', padding: '50px 0' }}>
             <Loader2 size={40} className="Broadcast-arch-spinner" />
-            <p>Scanning encrypted institutional logs...</p>
+            <p style={{ marginTop: '10px', color: '#64748b' }}>Scanning encrypted institutional logs...</p>
           </div>
         ) : filteredLogs.length > 0 ? (
           <div className="Broadcast-arch-list">

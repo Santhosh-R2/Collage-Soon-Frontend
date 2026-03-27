@@ -88,9 +88,9 @@ function ViewAllTeachers() {
 
       <div className="table-card">
         {loading ? (
-          <div className="loading-ui">
+          <div className="loading-ui" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', padding: '50px 0' }}>
             <div className="pulse-loader"></div>
-            <p>Loading Faculty Data...</p>
+            <p style={{ marginTop: '10px', color: '#64748b' }}>Loading Faculty Data...</p>
           </div>
         ) : (
           <table className="faculty-table">

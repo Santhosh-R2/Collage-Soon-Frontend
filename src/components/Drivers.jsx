@@ -221,9 +221,9 @@ function Drivers() {
       {/* Grid */}
       <div className="driver-grid">
         {loading ? (
-          <div className="status-msg">
+          <div className="status-msg" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', gridColumn: '1 / -1', padding: '50px 0' }}>
             <Loader2 className="spin" size={32} />
-            <span>Accessing Secure Database...</span>
+            <span style={{ marginTop: '10px', color: '#64748b' }}>Accessing Secure Database...</span>
           </div>
         ) : filtered.length > 0 ? (
           filtered.map(driver => (
