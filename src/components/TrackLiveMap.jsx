@@ -44,7 +44,7 @@ const MapController = ({ focusedBusId, buses, institute }) => {
         if (focusedBusId && buses[focusedBusId]) {
             const { lat, lng } = buses[focusedBusId].location;
             map.flyTo([lat, lng], 16, { duration: 1.5, easeLinearity: 0.25 });
-        } 
+        }
         // 2. Initial center on Campus HQ once institute data arrives
         else if (institute?.location && !initialCentered.current) {
             map.flyTo([institute.location.lat, institute.location.lng], 14, { duration: 1.2 });
@@ -143,7 +143,6 @@ const TrackLiveMap = () => {
     }, []);
 
     const busList = Object.values(buses);
-
     return (
         <div className="live-viewport">
             <div className="live-bg-decoration"></div>
@@ -201,8 +200,8 @@ const TrackLiveMap = () => {
                             <MapController focusedBusId={focusedBusId} buses={buses} institute={institute} />
 
                             {institute?.location && (
-                                <Marker 
-                                    position={[institute.location.lat, institute.location.lng]} 
+                                <Marker
+                                    position={[institute.location.lat, institute.location.lng]}
                                     icon={collegeIcon}
                                 >
                                     <Popup><strong>Campus HQ:</strong> Official Institute Location</Popup>
@@ -222,7 +221,7 @@ const TrackLiveMap = () => {
                                             <span className="live-pop-status">Active</span>
                                         </div>
                                         <div className="live-pop-body">
-                                            <p><span>Speed:</span> {bus.location.speed || 0} km/h</p>
+                                            {/* <p><span>Speed:</span> {bus.location.speed || 0} km/h</p> */}
                                             <p><span>Lat:</span> {bus.location.lat.toFixed(4)}</p>
                                             <p><span>Lng:</span> {bus.location.lng.toFixed(4)}</p>
                                         </div>
@@ -254,8 +253,8 @@ const TrackLiveMap = () => {
                                 </div>
                             ) : (
                                 busList.map(bus => (
-                                    <div 
-                                        className={`live-bus-item ${focusedBusId === bus.driverId ? 'focused' : ''}`} 
+                                    <div
+                                        className={`live-bus-item ${focusedBusId === bus.driverId ? 'focused' : ''}`}
                                         key={bus.driverId}
                                         onClick={() => setFocusedBusId(bus.driverId)}
                                     >
@@ -264,7 +263,7 @@ const TrackLiveMap = () => {
                                         </div>
                                         <div className="live-bus-details">
                                             <h4>{bus.driverName ? `Driver: ${bus.driverName}` : `Unit #${String(bus.driverId).substring(18)}`}</h4>
-                                            <p>{bus.location.speed} km/h • Signal Strong</p>
+                                            {/* <p>{bus.location.speed} km/h • Signal Strong</p> */}
                                         </div>
                                         <div className="live-status-ping"></div>
                                     </div>
