@@ -107,15 +107,15 @@ const TrackLiveMap = () => {
             socket.current.emit('join-app', { role: 'admin' });
         });
 
-        // Listen for real-time movement
-        socket.current.on('live-bus-update', (data) => {
+        // Listen for real-time movement (matches backend io.emit('all-bus-locations'))
+        socket.current.on('all-bus-locations', (data) => {
             setBuses(prev => ({
                 ...prev,
                 [data.driverId]: {
                     ...prev[data.driverId],
                     driverId: data.driverId,
-                    location: { lat: data.lat, lng: data.lng, heading: data.heading, speed: data.speed },
-                    lastUpdated: new Date()
+                    location: data.location,
+                    lastUpdated: data.lastUpdated || new Date()
                 }
             }));
             setStats(prev => ({ ...prev, lastUpdate: new Date() }));
